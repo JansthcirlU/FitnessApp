@@ -11,6 +11,7 @@ public class Exercise : NamedEntity<Guid>
 {
     private HashSet<Muscle.Muscle> _trainedMuscles = null!;
     private HashSet<Equipment.Base.Equipment> _requiredEquipment = null!;
+    private HashSet<ExerciseRoutine> _exerciseRoutines = null!;
 
     private Exercise()
     {
@@ -22,11 +23,13 @@ public class Exercise : NamedEntity<Guid>
         SetDescription(description);
         _trainedMuscles = new();
         _requiredEquipment = new();
+        _exerciseRoutines = new();
     }
 
     public string Description { get; private set; } = null!;
     public IEnumerable<Muscle.Muscle> TrainedMuscles => _trainedMuscles.ToList();
     public IEnumerable<Equipment.Base.Equipment> RequiredEquipment => _requiredEquipment.ToList();
+    public IEnumerable<ExerciseRoutine> ExerciseRoutines => _exerciseRoutines.ToList();
 
     public void SetDescription(string description)
     {
