@@ -27,4 +27,13 @@ public abstract class Equipment : NamedEntity<Guid>
     public EquipmentType Type { get; protected set; }
     public string? Description { get; private set; }
     public IEnumerable<Exercises.Exercise> SuitableExercises => _suitableExercises.ToList();
+
+    public void SetDescription(string description)
+    {
+        if (string.IsNullOrEmpty(description)) throw new ArgumentException("Description must not be empty", nameof(description));
+        if (string.IsNullOrWhiteSpace(description)) throw new ArgumentException("Description must not be whitespace.", nameof(description));
+    }
+
+    public void RemoveDescription()
+        => Description = null;
 }

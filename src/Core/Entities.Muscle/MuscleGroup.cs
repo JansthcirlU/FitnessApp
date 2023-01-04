@@ -17,4 +17,19 @@ public class MuscleGroup : NamedEntity<Guid>
     {
         _muscles = new();
     }
+
+    public IEnumerable<Muscle> Muscles => _muscles.ToList();
+
+    public void AddMuscle(Muscle muscle)
+    {
+        if (!_muscles.Add(muscle)) throw new InvalidOperationException($"Muscle \"{muscle.Name}\" already exists in this group.");
+    }
+
+    public void RemoveMuscle(Muscle muscle)
+    {
+        if (!_muscles.Remove(muscle)) throw new InvalidOperationException($"Muscle \"{muscle.Name}\" is not a member of this group.");
+    }
+
+    public void Clear()
+        => _muscles.Clear();
 }

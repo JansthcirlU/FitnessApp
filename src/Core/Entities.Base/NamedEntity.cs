@@ -12,8 +12,16 @@ public abstract class NamedEntity<T> : BaseEntity<T>
     }
     public NamedEntity(string name)
     {
-        Name = name;
+        SetName(name);
     }
 
     public string Name { get; private set; } = null!;
+
+    public void SetName(string name)
+    {
+        if (string.IsNullOrEmpty(name)) throw new ArgumentException("Name must not be null or empty.", nameof(name));
+        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name must not be null or whitespace.", nameof(name));
+        
+        Name = name;
+    }
 }
