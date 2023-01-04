@@ -12,10 +12,10 @@ public class ExerciseRoutine : BaseEntity<Guid>
     }
     public ExerciseRoutine(Exercise exercise, int sets, int reps, TimeSpan restTime)
     {        
-        Exercise = exercise;
-        Sets = sets;
-        Repetitions = reps;
-        RestTime = restTime;
+        ChangeExercise(exercise);
+        UpdateSets(sets);
+        UpdateRepetitions(reps);
+        UpdateRestTime(restTime);
         _routineSteps = new();
     }
 

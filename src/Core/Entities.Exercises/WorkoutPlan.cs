@@ -51,9 +51,9 @@ public class WorkoutPlan : NamedEntity<Guid>
     public void EditStepNumber(int stepNumber, int newStepNumber)
     {
         WorkoutPlanStep? step = _steps.SingleOrDefault(s => s.Step == stepNumber);
-        if (step is not WorkoutPlanStep stepToRemove) throw new ArgumentOutOfRangeException(nameof(stepNumber), $"Could not find step with step number {stepNumber}.");
+        if (step is not WorkoutPlanStep stepToEdit) throw new ArgumentOutOfRangeException(nameof(stepNumber), $"Could not find step with step number {stepNumber}.");
         if (_steps.Any(s => s.Step == newStepNumber)) throw new ArgumentException($"There already exists a step with step number {newStepNumber}.", nameof(newStepNumber));
 
-        stepToRemove.UpdateStepNumber(newStepNumber);
+        stepToEdit.UpdateStepNumber(newStepNumber);
     }
 }
