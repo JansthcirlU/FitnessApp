@@ -13,5 +13,5 @@ public interface IExerciseService<TId>
     /// Updates property values for the exercise row with the given id
     /// for non-null new values.
     /// </summary>
-    Task EditExerciseAsync(TId exerciseId, string? newName, string? newDescription, List<Muscle>? newTrainedMuscles, List<Equipment>? newRequiredEquipment, CancellationToken cancellationToken = default);
+    Task EditExerciseAsync(TId exerciseId, string? name, string? description, List<Muscle>? trainedMuscles, List<Equipment>? requiredEquipment, CancellationToken cancellationToken = default);
 }

@@ -44,9 +44,45 @@ public class Exercise : NamedEntity<Guid>
         if (!_requiredEquipment.Add(equipment)) throw new InvalidOperationException($"Equipment \"{equipment.Name}\" is already required for this exercise.");
     }
 
+    public void AddRequiredEquipment(List<eqBase.Equipment> equipment)
+    {
+        foreach (var e in equipment)
+        {
+            try
+            {
+                AddRequiredEquipment(e);
+            }
+            catch (InvalidOperationException)
+            {
+                continue;
+            }
+        }
+    }
+
     public void RemoveRequiredEquipment(eqBase.Equipment equipment)
     {
         if (!_requiredEquipment.Remove(equipment)) throw new InvalidOperationException($"Equipment \"{equipment.Name}\" is not required for this exercise.");
+    }
+
+    public void RemoveRequiredEquipment(List<eqBase.Equipment> equipment)
+    {
+        foreach (var e in equipment)
+        {
+            try
+            {
+                RemoveRequiredEquipment(e);
+            }
+            catch (InvalidOperationException)
+            {
+                continue;
+            }
+        }
+    }
+
+    public void EditRequiredEquipment(List<eqBase.Equipment> equipment)
+    {
+        _requiredEquipment.Clear();
+        AddRequiredEquipment(equipment);
     }
 
     public void AddTrainedMuscle(Muscle.Muscle muscle)
@@ -54,9 +90,51 @@ public class Exercise : NamedEntity<Guid>
         if (!_trainedMuscles.Add(muscle)) throw new InvalidOperationException($"Muscle \"{muscle.Name}\" is already trained by this exercises.");
     }
 
+    public void AddTrainedMuscles(List<Muscle.Muscle> muscles)
+    {
+        foreach (var muscle in muscles)
+        {
+            try
+            {
+                AddTrainedMuscle(muscle);
+            }
+            catch (InvalidOperationException)
+            {
+                continue;
+            }
+        }
+    }
+
+    public void EditTrainedMuscles(List<Muscle.Muscle> muscles)
+    {
+        _trainedMuscles.Clear();
+        AddTrainedMuscles(muscles);
+    }
+
+    public void EditTrainedMuscles(Muscle.MuscleGroup muscleGroup)
+    {
+        _trainedMuscles.Clear();
+        AddGroupMuscles(muscleGroup);
+    }
+
     public void RemoveTrainedMuscle(Muscle.Muscle muscle)
     {
         if (!_trainedMuscles.Remove(muscle)) throw new InvalidOperationException($"Muscle \"{muscle.Name}\" is not trained by this exercise.");
+    }
+
+    public void RemoveTrainedMuscles(List<Muscle.Muscle> muscles)
+    {
+        foreach (var muscle in muscles)
+        {
+            try
+            {
+                RemoveTrainedMuscle(muscle);
+            }
+            catch (InvalidOperationException)
+            {
+                continue;
+            }
+        }
     }
 
     public void AddGroupMuscles(Muscle.MuscleGroup muscleGroup)

@@ -9,4 +9,9 @@ public interface IFitnessService<TId>
     Task CreatePlanWithRoutinesAsync(string name, string description, List<ExerciseRoutine> routines, CancellationToken cancellationToken = default);
     Task AddPlanStepAsync(TId planId, ExerciseRoutine routine, CancellationToken cancellationToken = default);
     Task RemovePlanStepAsync(TId planId, int step, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Updates property values for the plan row with the given id
+    /// for non-null new values.
+    /// </summary>
+    Task EditPlanAsync(TId planId, string? name, string? description, CancellationToken cancellationToken = default);
 }
