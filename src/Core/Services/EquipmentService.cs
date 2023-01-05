@@ -13,37 +13,42 @@ public class EquipmentService : IEquipmentService<Guid>
         _equipmentRepository = equipmentRepository;
     }
 
-    public async Task DefineAccessoryAsync(string name, string description, CancellationToken cancellationToken = default)
+    public async Task<Accessory> DefineAccessoryAsync(string name, string description, CancellationToken cancellationToken = default)
     {
         Accessory accessory = new(name, description);
         await _equipmentRepository.AddAsync(accessory);
+        return accessory;
     }
 
-    public async Task DefineFreeWeightAsync(string name, double massKg, string? description = null, CancellationToken cancellationToken = default)
+    public async Task<FreeWeight> DefineFreeWeightAsync(string name, double massKg, string? description = null, CancellationToken cancellationToken = default)
     {
         FreeWeight freeWeight = new(name, massKg);
         if (description is not null) freeWeight.SetDescription(description);
         await _equipmentRepository.AddAsync(freeWeight);
+        return freeWeight;
     }
 
-    public async Task DefineMachineAsync(string name, string description, CancellationToken cancellationToken = default)
+    public async Task<ExerciseMachine> DefineMachineAsync(string name, string description, CancellationToken cancellationToken = default)
     {
         ExerciseMachine machine = new(name, description);
         await _equipmentRepository.AddAsync(machine);
+        return machine;
     }
 
-    public async Task DefineWeightBarAsync(string name, double diameterMm, double lengthCm, string? description = null, CancellationToken cancellationToken = default)
+    public async Task<Bar> DefineWeightBarAsync(string name, double diameterMm, double lengthCm, string? description = null, CancellationToken cancellationToken = default)
     {
         Bar bar = new(name, diameterMm, lengthCm);
         if (description is not null) bar.SetDescription(description);
         await _equipmentRepository.AddAsync(bar);
+        return bar;
     }
 
-    public async Task DefineWeightDiscAsync(string name, double massKg, double diameterMm, string? description = null, CancellationToken cancellationToken = default)
+    public async Task<WeightDisc> DefineWeightDiscAsync(string name, double massKg, double diameterMm, string? description = null, CancellationToken cancellationToken = default)
     {
         WeightDisc disc = new(name, massKg, diameterMm);
         if (description is not null) disc.SetDescription(description);
         await _equipmentRepository.AddAsync(disc);
+        return disc;
     }
 
     public async Task EditAccessoryAsync(Guid id, string? name, string? description, CancellationToken cancellationToken = default)
@@ -134,12 +139,12 @@ public class EquipmentService : IEquipmentService<Guid>
     private async Task<Equipment?> FindEquipmentAsync(Guid id, CancellationToken cancellationToken = default)
         => await _equipmentRepository.FindAsync(id, cancellationToken);
 
-    public async Task<Equipment> RemoveEquipmentAsync(Guid id)
+    public async Task<Equipment> RemoveEquipmentAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await _equipmentRepository.FindAsync(id);
+        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
         if (equipment is null) throw new ArgumentException($"Could not remove equipment, there is no equipment with id {id}", nameof(id));
 
-        await _equipmentRepository.RemoveAsync(equipment);
+        await _equipmentRepository.RemoveAsync(equipment, cancellationToken);
         return equipment;
     }
 }
