@@ -9,6 +9,11 @@ public class SqliteRepository<TEntity> :
 {
     private FitnessSqliteContext _context;
 
+    public SqliteRepository()
+    {
+        // Options are known already so this is fine?
+        _context = new();
+    }
     public SqliteRepository(FitnessSqliteContext context)
     {
         _context = context;

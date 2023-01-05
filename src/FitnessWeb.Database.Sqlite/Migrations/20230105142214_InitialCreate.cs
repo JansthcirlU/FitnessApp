@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FitnessWeb.Database.Sqlite.Migrations
 {
-    /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -21,8 +19,8 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                     DiameterMm = table.Column<double>(type: "REAL", nullable: true),
                     LengthCm = table.Column<double>(type: "REAL", nullable: true),
                     MassKg = table.Column<double>(type: "REAL", nullable: true),
-                    // WeightDiscMassKg = table.Column<double>(name: "WeightDisc_MassKg", type: "REAL", nullable: true),
-                    // WeightDiscDiameterMm = table.Column<double>(name: "WeightDisc_DiameterMm", type: "REAL", nullable: true),
+                    WeightDisc_MassKg = table.Column<double>(type: "REAL", nullable: true),
+                    WeightDisc_DiameterMm = table.Column<double>(type: "REAL", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -68,6 +66,19 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WorkoutPlan",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkoutPlan", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "EquipmentExercise",
                 columns: table => new
                 {
@@ -86,6 +97,27 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                     table.ForeignKey(
                         name: "FK_EquipmentExercise_Exercise_SuitableExercisesId",
                         column: x => x.SuitableExercisesId,
+                        principalTable: "Exercise",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExerciseRoutine",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ExerciseId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Sets = table.Column<int>(type: "INTEGER", nullable: false),
+                    Repetitions = table.Column<int>(type: "INTEGER", nullable: false),
+                    RestTime = table.Column<TimeSpan>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExerciseRoutine", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExerciseRoutine_Exercise_ExerciseId",
+                        column: x => x.ExerciseId,
                         principalTable: "Exercise",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -126,15 +158,41 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                 {
                     table.PrimaryKey("PK_MuscleMuscleGroup", x => new { x.MuscleGroupsId, x.MusclesId });
                     table.ForeignKey(
+                        name: "FK_MuscleMuscleGroup_Muscle_MusclesId",
+                        column: x => x.MusclesId,
+                        principalTable: "Muscle",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_MuscleMuscleGroup_MuscleGroup_MuscleGroupsId",
                         column: x => x.MuscleGroupsId,
                         principalTable: "MuscleGroup",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkoutPlanStep",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    StepPlanId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Step = table.Column<int>(type: "INTEGER", nullable: false),
+                    StepRoutineId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkoutPlanStep", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MuscleMuscleGroup_Muscle_MusclesId",
-                        column: x => x.MusclesId,
-                        principalTable: "Muscle",
+                        name: "FK_WorkoutPlanStep_ExerciseRoutine_StepRoutineId",
+                        column: x => x.StepRoutineId,
+                        principalTable: "ExerciseRoutine",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WorkoutPlanStep_WorkoutPlan_StepPlanId",
+                        column: x => x.StepPlanId,
+                        principalTable: "WorkoutPlan",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -150,12 +208,26 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                 column: "TrainedMusclesId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ExerciseRoutine_ExerciseId",
+                table: "ExerciseRoutine",
+                column: "ExerciseId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MuscleMuscleGroup_MusclesId",
                 table: "MuscleMuscleGroup",
                 column: "MusclesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkoutPlanStep_StepPlanId",
+                table: "WorkoutPlanStep",
+                column: "StepPlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkoutPlanStep_StepRoutineId",
+                table: "WorkoutPlanStep",
+                column: "StepRoutineId");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -168,16 +240,25 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                 name: "MuscleMuscleGroup");
 
             migrationBuilder.DropTable(
+                name: "WorkoutPlanStep");
+
+            migrationBuilder.DropTable(
                 name: "Equipment");
 
             migrationBuilder.DropTable(
-                name: "Exercise");
+                name: "Muscle");
 
             migrationBuilder.DropTable(
                 name: "MuscleGroup");
 
             migrationBuilder.DropTable(
-                name: "Muscle");
+                name: "ExerciseRoutine");
+
+            migrationBuilder.DropTable(
+                name: "WorkoutPlan");
+
+            migrationBuilder.DropTable(
+                name: "Exercise");
         }
     }
 }

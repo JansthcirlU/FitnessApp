@@ -48,10 +48,7 @@ public class EquipmentService : IEquipmentService<Guid>
 
     public async Task EditAccessoryAsync(Guid id, string? name, string? description, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"Could not edit accessory, there is no accessory with id {id}.", nameof(id));
-        if (equipment is not Accessory accessory) throw new InvalidOperationException($"Equipment with the given id {id} is not an accessory.");
-
+        Accessory accessory = await FindAccessoryAsync(id, cancellationToken);
         if (name is not null) accessory.SetName(name);
         if (description is not null) accessory.SetDescription(description);
         await _equipmentRepository.SaveChangesAsync();
@@ -59,10 +56,7 @@ public class EquipmentService : IEquipmentService<Guid>
 
     public async Task EditFreeWeightAsync(Guid id, string? name, double? massKg, string? description = null, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"Could not edit free weight, there is no free weight with id {id}.", nameof(id));
-        if (equipment is not FreeWeight freeWeight) throw new InvalidOperationException($"Equipment with the given id {id} is not a free weight.");
-
+        FreeWeight freeWeight = await FindFreeWeightAsync(id, cancellationToken);
         if (name is not null) freeWeight.SetName(name);
         if (massKg is double m) freeWeight.SetMass(m);
         if (description is not null) freeWeight.SetDescription(description);
@@ -71,10 +65,7 @@ public class EquipmentService : IEquipmentService<Guid>
 
     public async Task EditMachineAsync(Guid id, string? name, string? description, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"Could not edit exercise machine, there is no exercise machine with id {id}.", nameof(id));
-        if (equipment is not ExerciseMachine machine) throw new InvalidOperationException($"Equipment with the given id {id} is not an exercise machine.");
-
+        ExerciseMachine machine = await FindMachineAsync(id, cancellationToken);
         if (name is not null) machine.SetName(name);
         if (description is not null) machine.SetDescription(description);
         await _equipmentRepository.SaveChangesAsync();
@@ -82,10 +73,7 @@ public class EquipmentService : IEquipmentService<Guid>
 
     public async Task EditWeightBarAsync(Guid id, string? name, double? diameterMm, double? lengthCm, string? description = null, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"Could not edit bar, there is no bar with id {id}.", nameof(id));
-        if (equipment is not Bar bar) throw new InvalidOperationException($"Equipment with the given id {id} is not a bar.");
-
+        Bar bar = await FindWeightBarAsync(id, cancellationToken);
         if (name is not null) bar.SetName(name);
         if (diameterMm is double d) bar.SetDiameter(d);
         if (lengthCm is double l) bar.SetLength(l);
@@ -95,10 +83,7 @@ public class EquipmentService : IEquipmentService<Guid>
 
     public async Task EditWeightDiscAsync(Guid id, string? name, double? massKg, double? diameterMm, string? description = null, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"Could not edit weight disc, there is no weight disc with id {id}.", nameof(id));
-        if (equipment is not WeightDisc disc) throw new InvalidOperationException($"Equipment with the given id {id} is not a weight disc.");
-
+        WeightDisc disc = await FindWeightDiscAsync(id, cancellationToken);
         if (name is not null) disc.SetName(name);
         if (massKg is double m) disc.SetMass(m);
         if (diameterMm is double d) disc.SetDiameter(d);
@@ -106,11 +91,55 @@ public class EquipmentService : IEquipmentService<Guid>
         await _equipmentRepository.SaveChangesAsync();
     }
 
-    public async Task RemoveEquipmentAsync(Guid id)
+    public async Task<Accessory> FindAccessoryAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
+        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        if (equipment is not Accessory accessory) throw new InvalidOperationException($"Equipment with id {id} is not an accessory.");
+        return accessory;
+    }
+
+    public async Task<FreeWeight> FindFreeWeightAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
+        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        if (equipment is not FreeWeight freeWeight) throw new InvalidOperationException($"Equipment with id {id} is not a free weight.");
+        return freeWeight;
+    }
+
+    public async Task<ExerciseMachine> FindMachineAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
+        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        if (equipment is not ExerciseMachine machine) throw new InvalidOperationException($"Equipment with id {id} is not an exercise machine.");
+        return machine;
+    }
+
+    public async Task<Bar> FindWeightBarAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
+        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        if (equipment is not Bar bar) throw new InvalidOperationException($"Equipment with id {id} is not a bar.");
+        return bar;
+    }
+
+    public async Task<WeightDisc> FindWeightDiscAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
+        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        if (equipment is not WeightDisc disc) throw new InvalidOperationException($"Equipment with id {id} is not a weight disc.");
+        return disc;
+    }
+
+    private async Task<Equipment?> FindEquipmentAsync(Guid id, CancellationToken cancellationToken = default)
+        => await _equipmentRepository.FindAsync(id, cancellationToken);
+
+    public async Task<Equipment> RemoveEquipmentAsync(Guid id)
     {
         Equipment? equipment = await _equipmentRepository.FindAsync(id);
         if (equipment is null) throw new ArgumentException($"Could not remove equipment, there is no equipment with id {id}", nameof(id));
 
         await _equipmentRepository.RemoveAsync(equipment);
+        return equipment;
     }
 }

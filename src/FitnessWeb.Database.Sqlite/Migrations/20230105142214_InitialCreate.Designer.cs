@@ -11,14 +11,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessWeb.Database.Sqlite.Migrations
 {
     [DbContext(typeof(FitnessSqliteContext))]
-    [Migration("20230104141948_PlanToStepLink")]
-    partial class PlanToStepLink
+    [Migration("20230105142214_InitialCreate")]
+    partial class InitialCreate
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.0");
 
             modelBuilder.Entity("Core.Entities.Equipment.Base.Equipment", b =>
                 {
@@ -41,8 +40,6 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                     b.ToTable("Equipment");
 
                     b.HasDiscriminator<int>("Type");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Core.Entities.Exercises.Exercise", b =>
@@ -249,19 +246,12 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                     b.HasBaseType("Core.Entities.Equipment.Base.Equipment");
 
                     b.Property<double>("DiameterMm")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("WeightDisc_DiameterMm");
 
                     b.Property<double>("MassKg")
-                        .HasColumnType("REAL");
-
-                    // b.ToTable(t =>
-                    //     {
-                    //         t.Property("DiameterMm")
-                    //             .HasColumnName("WeightDisc_DiameterMm");
-
-                    //         t.Property("MassKg")
-                    //             .HasColumnName("WeightDisc_MassKg");
-                    //     });
+                        .HasColumnType("REAL")
+                        .HasColumnName("WeightDisc_MassKg");
 
                     b.HasDiscriminator().HasValue(2);
                 });

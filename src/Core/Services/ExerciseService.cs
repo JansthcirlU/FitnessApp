@@ -5,7 +5,7 @@ using Core.Repositories;
 
 namespace Core.Services;
 
-public class ExerciseService<TId> : IExerciseService<Guid>
+public class ExerciseService : IExerciseService<Guid>
 {
     private IRepository<Exercise, Guid> _exerciseRepository;
 
