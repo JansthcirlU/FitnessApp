@@ -98,46 +98,45 @@ public class EquipmentService : IEquipmentService<Guid>
 
     public async Task<Accessory> FindAccessoryAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        Equipment equipment = await FindEquipmentAsync(id, cancellationToken);
         if (equipment is not Accessory accessory) throw new InvalidOperationException($"Equipment with id {id} is not an accessory.");
         return accessory;
     }
 
     public async Task<FreeWeight> FindFreeWeightAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        Equipment equipment = await FindEquipmentAsync(id, cancellationToken);
         if (equipment is not FreeWeight freeWeight) throw new InvalidOperationException($"Equipment with id {id} is not a free weight.");
         return freeWeight;
     }
 
     public async Task<ExerciseMachine> FindMachineAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        Equipment equipment = await FindEquipmentAsync(id, cancellationToken);
         if (equipment is not ExerciseMachine machine) throw new InvalidOperationException($"Equipment with id {id} is not an exercise machine.");
         return machine;
     }
 
     public async Task<Bar> FindWeightBarAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        Equipment equipment = await FindEquipmentAsync(id, cancellationToken);
         if (equipment is not Bar bar) throw new InvalidOperationException($"Equipment with id {id} is not a bar.");
         return bar;
     }
 
     public async Task<WeightDisc> FindWeightDiscAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        Equipment? equipment = await FindEquipmentAsync(id, cancellationToken);
-        if (equipment is null) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        Equipment equipment = await FindEquipmentAsync(id, cancellationToken);
         if (equipment is not WeightDisc disc) throw new InvalidOperationException($"Equipment with id {id} is not a weight disc.");
         return disc;
     }
 
-    private async Task<Equipment?> FindEquipmentAsync(Guid id, CancellationToken cancellationToken = default)
-        => await _equipmentRepository.FindAsync(id, cancellationToken);
+    private async Task<Equipment> FindEquipmentAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
+        if (equipment is not Equipment eq) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        return eq;
+    }
 
     public async Task<Equipment> RemoveEquipmentAsync(Guid id, CancellationToken cancellationToken = default)
     {
