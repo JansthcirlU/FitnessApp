@@ -1,12 +1,11 @@
 using Core.Entities.Equipment;
-using Core.Entities.Equipment.Base;
 using Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessWeb.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class EquipmentController : ControllerBase
 {
     private readonly IEquipmentService<Guid> _equipmentService;

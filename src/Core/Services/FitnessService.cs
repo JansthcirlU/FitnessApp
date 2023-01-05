@@ -26,13 +26,14 @@ public class FitnessService : IFitnessService<Guid>
         await _workoutPlanRepository.SaveChangesAsync();
     }
 
-    public async Task CreateEmptyPlanAsync(string name, string description, CancellationToken cancellationToken = default)
+    public async Task<WorkoutPlan> CreateEmptyPlanAsync(string name, string description, CancellationToken cancellationToken = default)
     {
         WorkoutPlan plan = new(name, description);
         await _workoutPlanRepository.AddAsync(plan, cancellationToken);
+        return plan;
     }
 
-    public async Task CreatePlanWithRoutinesAsync(string name, string description, List<ExerciseRoutine> routines, CancellationToken cancellationToken = default)
+    public async Task<WorkoutPlan> CreatePlanWithRoutinesAsync(string name, string description, List<ExerciseRoutine> routines, CancellationToken cancellationToken = default)
     {
         WorkoutPlan plan = new(name, description);
         foreach (var routine in routines)
@@ -40,6 +41,7 @@ public class FitnessService : IFitnessService<Guid>
             plan.AddStep(routine);
         }
         await _workoutPlanRepository.AddAsync(plan);
+        return plan;
     }
 
     public async Task EditPlanAsync(Guid planId, string? name, string? description, CancellationToken cancellationToken = default)

@@ -13,22 +13,24 @@ public class ExerciseService : IExerciseService<Guid>
     {
         _exerciseRepository = exerciseRepository;
     }
-    public async Task DefineExerciseAsync(string name, string description, List<Muscle> trainedMuscles, List<Equipment> requiredEquipment, CancellationToken cancellationToken = default)
+    public async Task<Exercise> DefineExerciseAsync(string name, string description, List<Muscle> trainedMuscles, List<Equipment> requiredEquipment, CancellationToken cancellationToken = default)
     {
         Exercise exercise = new(name, description);
         exercise.AddTrainedMuscles(trainedMuscles);
         exercise.AddRequiredEquipment(requiredEquipment);
 
         await _exerciseRepository.AddAsync(exercise);
+        return exercise;
     }
 
-    public async Task DefineExerciseAsync(string name, string description, MuscleGroup trainedMuscleGroup, List<Equipment> requiredEquipment, CancellationToken cancellationToken = default)
+    public async Task<Exercise> DefineExerciseAsync(string name, string description, MuscleGroup trainedMuscleGroup, List<Equipment> requiredEquipment, CancellationToken cancellationToken = default)
     {
         Exercise exercise = new(name, description);
         exercise.AddGroupMuscles(trainedMuscleGroup);
         exercise.AddRequiredEquipment(requiredEquipment);
 
         await _exerciseRepository.AddAsync(exercise);
+        return exercise;
     }
 
     public async Task EditExerciseAsync(Guid exerciseId, string? name, string? description, List<Muscle>? trainedMuscles, List<Equipment>? requiredEquipment, CancellationToken cancellationToken = default)
