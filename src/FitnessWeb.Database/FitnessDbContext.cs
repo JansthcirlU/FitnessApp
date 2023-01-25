@@ -13,6 +13,7 @@ public abstract class FitnessDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         modelBuilder
             .ApplyConfiguration(new EquipmentTypeConfiguration())
-            .ApplyConfiguration(new ExerciseTypeConfiguration());
+            .ApplyConfiguration(new ExerciseTypeConfiguration())
+            .ApplyConfiguration(new UserTypeConfiguration());
     }
 }

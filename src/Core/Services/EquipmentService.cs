@@ -4,13 +4,27 @@ using Core.Repositories;
 
 namespace Core.Services;
 
-public class EquipmentService : IEquipmentService<Guid>
+internal class EquipmentService : IEquipmentService<Guid>
 {
     private IRepository<Equipment, Guid> _equipmentRepository;
 
     public EquipmentService(IRepository<Equipment, Guid> equipmentRepository)
     {
         _equipmentRepository = equipmentRepository;
+    }
+
+    public async Task<Equipment> FindEquipmentAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
+        if (equipment is not Equipment eq) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
+        return eq;
+    }
+
+    public async Task<IQueryable<Equipment>> GetUserEquipment(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var equipment = await _equipmentRepository.GetAllAsync();
+        return equipment
+            .Where(e => e.Owners.Any(o => o.Id == userId)); // How to uninclude other users from the returned entity?
     }
 
     public async Task<Accessory> DefineAccessoryAsync(string name, string description, CancellationToken cancellationToken = default)
@@ -56,7 +70,7 @@ public class EquipmentService : IEquipmentService<Guid>
         Accessory accessory = await FindAccessoryAsync(id, cancellationToken);
         if (name is not null) accessory.SetName(name);
         if (description is not null) accessory.SetDescription(description);
-        await _equipmentRepository.SaveChangesAsync();
+        await _equipmentRepository.UpdateAsync(accessory);
     }
 
     public async Task EditFreeWeightAsync(Guid id, string? name, double? massKg, string? description = null, CancellationToken cancellationToken = default)
@@ -65,7 +79,7 @@ public class EquipmentService : IEquipmentService<Guid>
         if (name is not null) freeWeight.SetName(name);
         if (massKg is double m) freeWeight.SetMass(m);
         if (description is not null) freeWeight.SetDescription(description);
-        await _equipmentRepository.SaveChangesAsync();
+        await _equipmentRepository.UpdateAsync(freeWeight);
     }
 
     public async Task EditMachineAsync(Guid id, string? name, string? description, CancellationToken cancellationToken = default)
@@ -73,7 +87,7 @@ public class EquipmentService : IEquipmentService<Guid>
         ExerciseMachine machine = await FindMachineAsync(id, cancellationToken);
         if (name is not null) machine.SetName(name);
         if (description is not null) machine.SetDescription(description);
-        await _equipmentRepository.SaveChangesAsync();
+        await _equipmentRepository.UpdateAsync(machine);
     }
 
     public async Task EditWeightBarAsync(Guid id, string? name, double? diameterMm, double? lengthCm, string? description = null, CancellationToken cancellationToken = default)
@@ -83,7 +97,7 @@ public class EquipmentService : IEquipmentService<Guid>
         if (diameterMm is double d) bar.SetDiameter(d);
         if (lengthCm is double l) bar.SetLength(l);
         if (description is not null) bar.SetDescription(description);
-        await _equipmentRepository.SaveChangesAsync();
+        await _equipmentRepository.UpdateAsync(bar);
     }
 
     public async Task EditWeightDiscAsync(Guid id, string? name, double? massKg, double? diameterMm, string? description = null, CancellationToken cancellationToken = default)
@@ -93,7 +107,7 @@ public class EquipmentService : IEquipmentService<Guid>
         if (massKg is double m) disc.SetMass(m);
         if (diameterMm is double d) disc.SetDiameter(d);
         if (description is not null) disc.SetDescription(description);
-        await _equipmentRepository.SaveChangesAsync();
+        await _equipmentRepository.UpdateAsync(disc);
     }
 
     public async Task<Accessory> FindAccessoryAsync(Guid id, CancellationToken cancellationToken = default)
@@ -129,13 +143,6 @@ public class EquipmentService : IEquipmentService<Guid>
         Equipment equipment = await FindEquipmentAsync(id, cancellationToken);
         if (equipment is not WeightDisc disc) throw new InvalidOperationException($"Equipment with id {id} is not a weight disc.");
         return disc;
-    }
-
-    private async Task<Equipment> FindEquipmentAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        Equipment? equipment = await _equipmentRepository.FindAsync(id, cancellationToken);
-        if (equipment is not Equipment eq) throw new ArgumentException($"There is no equipment with id {id}.", nameof(id));
-        return eq;
     }
 
     public async Task<Equipment> RemoveEquipmentAsync(Guid id, CancellationToken cancellationToken = default)

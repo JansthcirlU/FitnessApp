@@ -1,5 +1,7 @@
 using Core.Entities.Exercises;
+using Core.Entities.Users;
 using Core.Repositories;
+using System.Linq;
 
 namespace Core.Services;
 
@@ -7,13 +9,30 @@ public class FitnessService : IFitnessService<Guid>
 {
     private IRepository<WorkoutPlan, Guid> _workoutPlanRepository;
     private IRepository<ExerciseRoutine, Guid> _exerciseRoutineRepository;
+    private IRepository<User, Guid> _userRepository;
 
     public FitnessService(
         IRepository<WorkoutPlan, Guid> workoutPlanRepository,
-        IRepository<ExerciseRoutine, Guid> exerciseRoutineRepository)
+        IRepository<ExerciseRoutine, Guid> exerciseRoutineRepository,
+        IRepository<User, Guid> userRepository)
     {
         _workoutPlanRepository = workoutPlanRepository;
         _exerciseRoutineRepository = exerciseRoutineRepository;
+        _userRepository = userRepository;
+    }
+
+    public async Task<IQueryable<WorkoutPlan>> GetUserPlans(Guid userId, CancellationToken cancellationToken = default)
+    {
+        IQueryable<WorkoutPlan> plans = await _workoutPlanRepository.GetAllAsync();
+        return plans
+            .Where(p => p.User.Id == userId);
+    }
+
+    public async Task<WorkoutPlan> FindPlanAsync(Guid planId, CancellationToken cancellationToken = default)
+    {
+        WorkoutPlan? plan = await _workoutPlanRepository.FindAsync(planId, cancellationToken);
+        if (plan is null) throw new ArgumentException($"There exists no plan with id {planId}.", nameof(planId));
+        return plan;
     }
 
     public async Task AddPlanStepAsync(Guid planId, ExerciseRoutine routine, CancellationToken cancellationToken = default)
@@ -26,21 +45,27 @@ public class FitnessService : IFitnessService<Guid>
         await _workoutPlanRepository.SaveChangesAsync();
     }
 
-    public async Task<WorkoutPlan> CreateEmptyPlanAsync(string name, string description, CancellationToken cancellationToken = default)
+    public async Task<WorkoutPlan> CreateEmptyPlanAsync(Guid userId, string name, string description, CancellationToken cancellationToken = default)
     {
+        User? user = await _userRepository.FindAsync(userId, cancellationToken);
+        if (user is null) throw new ArgumentException($"Cannot add plan for user. Invalid user id {userId}.", nameof(userId));
         WorkoutPlan plan = new(name, description);
-        await _workoutPlanRepository.AddAsync(plan, cancellationToken);
+        user.AddPlan(plan);
+        await _userRepository.SaveChangesAsync();
         return plan;
     }
 
-    public async Task<WorkoutPlan> CreatePlanWithRoutinesAsync(string name, string description, List<ExerciseRoutine> routines, CancellationToken cancellationToken = default)
+    public async Task<WorkoutPlan> CreatePlanWithRoutinesAsync(Guid userId, string name, string description, List<ExerciseRoutine> routines, CancellationToken cancellationToken = default)
     {
+        User? user = await _userRepository.FindAsync(userId, cancellationToken);
+        if (user is null) throw new ArgumentException($"Cannot add plan for user. Invalid user id {userId}.", nameof(userId));
         WorkoutPlan plan = new(name, description);
         foreach (var routine in routines)
         {
             plan.AddStep(routine);
         }
-        await _workoutPlanRepository.AddAsync(plan);
+        user.AddPlan(plan);
+        await _userRepository.SaveChangesAsync();
         return plan;
     }
 

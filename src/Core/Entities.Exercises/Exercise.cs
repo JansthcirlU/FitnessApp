@@ -25,6 +25,11 @@ public class Exercise : NamedEntity<Guid>
         _requiredEquipment = new();
         _exerciseRoutines = new();
     }
+    public Exercise(Guid id, string name, string description)
+        : this(name, description)
+    {
+        Id = id;
+    }
 
     public string Description { get; private set; } = null!;
     public IEnumerable<Muscle.Muscle> TrainedMuscles => _trainedMuscles.ToList();

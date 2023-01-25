@@ -98,7 +98,12 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("WorkoutPlan");
                 });
@@ -157,6 +162,28 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                     b.ToTable("MuscleGroup");
                 });
 
+            modelBuilder.Entity("Core.Entities.Users.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
+                });
+
             modelBuilder.Entity("EquipmentExercise", b =>
                 {
                     b.Property<Guid>("RequiredEquipmentId")
@@ -170,6 +197,21 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                     b.HasIndex("SuitableExercisesId");
 
                     b.ToTable("EquipmentExercise");
+                });
+
+            modelBuilder.Entity("EquipmentUser", b =>
+                {
+                    b.Property<Guid>("EquipmentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OwnersId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("EquipmentId", "OwnersId");
+
+                    b.HasIndex("OwnersId");
+
+                    b.ToTable("EquipmentUser");
                 });
 
             modelBuilder.Entity("ExerciseMuscle", b =>
@@ -265,6 +307,17 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                     b.Navigation("Exercise");
                 });
 
+            modelBuilder.Entity("Core.Entities.Exercises.WorkoutPlan", b =>
+                {
+                    b.HasOne("Core.Entities.Users.User", "User")
+                        .WithMany("Plans")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Core.Entities.Exercises.WorkoutPlanStep", b =>
                 {
                     b.HasOne("Core.Entities.Exercises.WorkoutPlan", "StepPlan")
@@ -295,6 +348,21 @@ namespace FitnessWeb.Database.Sqlite.Migrations
                     b.HasOne("Core.Entities.Exercises.Exercise", null)
                         .WithMany()
                         .HasForeignKey("SuitableExercisesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EquipmentUser", b =>
+                {
+                    b.HasOne("Core.Entities.Equipment.Base.Equipment", null)
+                        .WithMany()
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("OwnersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -342,6 +410,11 @@ namespace FitnessWeb.Database.Sqlite.Migrations
             modelBuilder.Entity("Core.Entities.Exercises.WorkoutPlan", b =>
                 {
                     b.Navigation("Steps");
+                });
+
+            modelBuilder.Entity("Core.Entities.Users.User", b =>
+                {
+                    b.Navigation("Plans");
                 });
 #pragma warning restore 612, 618
         }

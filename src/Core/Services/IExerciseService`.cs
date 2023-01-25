@@ -7,6 +7,8 @@ namespace Core.Services;
 public interface IExerciseService<TId>
     where TId : struct, IComparable<TId>, IEquatable<TId>
 {
+    Task<IQueryable<Exercise>> GetDefaultExercisesAsync();
+    Task<Exercise> FindExercise(TId exerciseId, CancellationToken cancellationToken = default);
     Task<Exercise> DefineExerciseAsync(string name, string description, List<Muscle> trainedMuscles, List<Equipment> requiredEquipment, CancellationToken cancellationToken = default);
     Task<Exercise> DefineExerciseAsync(string name, string description, MuscleGroup trainedMuscleGroup, List<Equipment> requiredEquipment, CancellationToken cancellationToken = default);
     

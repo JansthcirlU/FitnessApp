@@ -13,6 +13,11 @@ public class ExerciseService : IExerciseService<Guid>
     {
         _exerciseRepository = exerciseRepository;
     }
+
+    public async Task<Exercise> FindExercise(Guid exerciseId, CancellationToken cancellationToken = default)
+        => await _exerciseRepository.FindAsync(exerciseId, cancellationToken)
+        ?? throw new ArgumentException($"Could not find exercise. There is no exercise with id {exerciseId}.", nameof(exerciseId));
+
     public async Task<Exercise> DefineExerciseAsync(string name, string description, List<Muscle> trainedMuscles, List<Equipment> requiredEquipment, CancellationToken cancellationToken = default)
     {
         Exercise exercise = new(name, description);
@@ -20,6 +25,7 @@ public class ExerciseService : IExerciseService<Guid>
         exercise.AddRequiredEquipment(requiredEquipment);
 
         await _exerciseRepository.AddAsync(exercise);
+        await _exerciseRepository.SaveChangesAsync();
         return exercise;
     }
 
@@ -30,6 +36,7 @@ public class ExerciseService : IExerciseService<Guid>
         exercise.AddRequiredEquipment(requiredEquipment);
 
         await _exerciseRepository.AddAsync(exercise);
+        await _exerciseRepository.SaveChangesAsync();
         return exercise;
     }
 
@@ -43,6 +50,10 @@ public class ExerciseService : IExerciseService<Guid>
         if (trainedMuscles is not null) exercise.EditTrainedMuscles(trainedMuscles);
         if (requiredEquipment is not null) exercise.EditRequiredEquipment(requiredEquipment);
 
+        await _exerciseRepository.UpdateAsync(exercise);
         await _exerciseRepository.SaveChangesAsync();
     }
+
+    public async Task<IQueryable<Exercise>> GetDefaultExercisesAsync()
+        => await _exerciseRepository.GetAllAsync();
 }

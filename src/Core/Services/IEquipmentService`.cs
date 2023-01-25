@@ -6,6 +6,8 @@ namespace Core.Services;
 public interface IEquipmentService<TId>
     where TId : struct, IComparable<TId>, IEquatable<TId>
 {
+    Task<Equipment> FindEquipmentAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IQueryable<Equipment>> GetUserEquipment(TId userId, CancellationToken cancellationToken = default);
     Task<Accessory> FindAccessoryAsync(TId id, CancellationToken cancellationToken = default);
     Task<Accessory> DefineAccessoryAsync(string name, string description, CancellationToken cancellationToken = default);
     /// <summary>

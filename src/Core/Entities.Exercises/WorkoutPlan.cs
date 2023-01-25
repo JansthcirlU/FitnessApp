@@ -1,4 +1,5 @@
 using Core.Entities.Base;
+using Core.Entities.Users;
 
 namespace Core.Entities.Exercises;
 
@@ -10,14 +11,16 @@ public class WorkoutPlan : NamedEntity<Guid>
     {
         
     }
-    public WorkoutPlan(string name, string description)
+    public WorkoutPlan(/* User user,  */string name, string description)
         : base(name)
     {
+        // User = user; // Does EF/ORM deal with this?
         SetDescription(description);
         _steps = new();
     }
 
     public string Description { get; private set; } = null!;
+    public User User { get; private set; } = null!;
     public IEnumerable<WorkoutPlanStep> Steps => _steps.ToList();
 
     public void SetDescription(string description)
