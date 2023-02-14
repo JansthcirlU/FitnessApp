@@ -8,14 +8,15 @@ public class WorkoutPlanStep : BaseEntity<Guid>
     {
         
     }
-    public WorkoutPlanStep(int step, ExerciseRoutine stepExercise)
+    public WorkoutPlanStep(int step, ExerciseRoutine stepRoutine)
     {
         Step = step;
-        StepExercise = stepExercise;
+        StepRoutine = stepRoutine;
     }
 
+    public WorkoutPlan StepPlan { get; private set; } = null!;
     public int Step { get; private set; }
-    public ExerciseRoutine StepExercise { get; private set; } = null!;
+    public ExerciseRoutine StepRoutine { get; private set; } = null!;
 
     public void UpdateStepNumber(int step)
     {

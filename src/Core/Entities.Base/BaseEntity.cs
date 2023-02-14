@@ -6,5 +6,5 @@ namespace Core.Entities.Base;
 public abstract class BaseEntity<T>
     where T : struct, IComparable<T>, IEquatable<T>
 {
-    public T Id { get; set; }
+    public T Id { get; protected set; } = default;
 }

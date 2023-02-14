@@ -13,8 +13,9 @@ public class Muscle : NamedEntity<Guid>
     private Muscle()
     {
     }
-    public Muscle(string name) : base(name)
+    public Muscle(Guid muscleId, string name) : base(name)
     {
+        Id = muscleId;
         _muscleExercises = new();
         _muscleGroups = new();
     }

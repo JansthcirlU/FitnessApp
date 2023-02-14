@@ -1,4 +1,5 @@
 using Core.Entities.Base;
+using Core.Entities.Users;
 
 namespace Core.Entities.Exercises;
 
@@ -10,14 +11,16 @@ public class WorkoutPlan : NamedEntity<Guid>
     {
         
     }
-    public WorkoutPlan(string name, string description)
+    public WorkoutPlan(/* User user,  */string name, string description)
         : base(name)
     {
+        // User = user; // Does EF/ORM deal with this?
         SetDescription(description);
         _steps = new();
     }
 
     public string Description { get; private set; } = null!;
+    public User User { get; private set; } = null!;
     public IEnumerable<WorkoutPlanStep> Steps => _steps.ToList();
 
     public void SetDescription(string description)
@@ -51,9 +54,9 @@ public class WorkoutPlan : NamedEntity<Guid>
     public void EditStepNumber(int stepNumber, int newStepNumber)
     {
         WorkoutPlanStep? step = _steps.SingleOrDefault(s => s.Step == stepNumber);
-        if (step is not WorkoutPlanStep stepToRemove) throw new ArgumentOutOfRangeException(nameof(stepNumber), $"Could not find step with step number {stepNumber}.");
+        if (step is not WorkoutPlanStep stepToEdit) throw new ArgumentOutOfRangeException(nameof(stepNumber), $"Could not find step with step number {stepNumber}.");
         if (_steps.Any(s => s.Step == newStepNumber)) throw new ArgumentException($"There already exists a step with step number {newStepNumber}.", nameof(newStepNumber));
 
-        stepToRemove.UpdateStepNumber(newStepNumber);
+        stepToEdit.UpdateStepNumber(newStepNumber);
     }
 }
